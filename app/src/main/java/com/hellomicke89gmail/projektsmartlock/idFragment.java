@@ -60,7 +60,7 @@ public class idFragment extends Fragment implements SwipeRefreshLayout.OnRefresh
 
             recyclerView.setAdapter(myAdapter);
             myAdapter.notifyDataSetChanged();
-            listView.getIdList();
+
 
         return rootView;
     }

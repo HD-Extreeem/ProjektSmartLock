@@ -27,18 +27,15 @@ public class AsyncTaskUnlock extends  AsyncTask<Void,Void,Void>{
         HttpsURLConnection urlConnection;
 
         try {
-            byte[] data = Base64.decode(authString, Base64.DEFAULT);
-            String authorize = new String(data);
 
             System.out.println("Base64 encoded auth string: " + authString);
 
-            URL url = new URL("https://" + authorize + "@lockdroid.se/client?message=open");
+            URL url = new URL("https://" + authString + "@lockdroid.se/client?message=open");
             urlConnection = (HttpsURLConnection) url.openConnection();
 
             urlConnection.setRequestProperty("Authorization", "Basic " + authString);
 
             int statusCode = urlConnection.getResponseCode();
-            System.out.println(authorize);
 
             System.out.println(url);
 

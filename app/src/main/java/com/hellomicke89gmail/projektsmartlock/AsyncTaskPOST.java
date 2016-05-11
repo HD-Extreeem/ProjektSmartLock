@@ -56,12 +56,9 @@ public class AsyncTaskPOST extends AsyncTask<Void,Void,Void>{
         try {
             HttpURLConnection urlConnection;
 
-            byte[] data = Base64.decode(authString, Base64.DEFAULT);
-            String authorize = new String(data);
-
             System.out.println("Base64 encoded auth string: " + authString);
 
-            url = new URL("https://" + authorize + "@lockdroid.se/admin");
+            url = new URL("https://" + authString + "@lockdroid.se/admin");
             urlConnection = (HttpsURLConnection) url.openConnection();
 
             urlConnection.setRequestProperty("Authorization", "Basic " + authString);

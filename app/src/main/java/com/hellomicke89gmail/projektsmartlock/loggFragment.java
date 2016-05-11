@@ -58,7 +58,6 @@ public class loggFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         loggRecyclerView.setLayoutManager(LinearLayoutManager);
         loggRecyclerView.addItemDecoration(new MyItemDecoration());
-        listView.getLoggList();
 
         loggRecyclerView.setAdapter(myAdapter);
         myAdapter.notifyDataSetChanged();

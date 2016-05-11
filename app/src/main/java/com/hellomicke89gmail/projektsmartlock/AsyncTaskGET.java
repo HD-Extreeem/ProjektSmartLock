@@ -52,13 +52,10 @@ public class AsyncTaskGET extends AsyncTask<String,Void,Integer>{
             Integer result =0;
             HttpURLConnection urlConnection;
             try{
-                byte[] data = Base64.decode(authString, Base64.DEFAULT);
-                String authorize = new String(data);
-
 
                 System.out.println("Base64 encoded auth string: " + authString);
 
-                URL url = new URL("https://" + authorize + "@lockdroid.se/admin");
+                URL url = new URL("https://" + authString + "@lockdroid.se/admin");
                 urlConnection = (HttpsURLConnection) url.openConnection();
 
                 urlConnection.setRequestProperty("Authorization", "Basic " + authString);

@@ -74,13 +74,14 @@ public class ApprovedListView extends AppCompatActivity implements PopupMenu.OnM
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_approved_list_view);
+        registercomponents();
+        setupDrawer();
+        setUpViewPager();
+        navigationview();
 
-        if (savedInstanceState!=null){
-            usernameLabel=savedInstanceState.getString("username");
-            authString=savedInstanceState.getString("authString");
-        }
-        else {
-            setContentView(R.layout.activity_approved_list_view);
+        getLoggList();
+        getIdList();
 
 
             int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
@@ -95,11 +96,8 @@ public class ApprovedListView extends AppCompatActivity implements PopupMenu.OnM
                 Intent intent = new Intent(this, GCMRegistrationIntentService.class);
                 startService(intent);
             }
-        }
-        registercomponents();
-        setupDrawer();
-        setUpViewPager();
-        navigationview();
+
+
     }
 
     @Override
@@ -107,6 +105,8 @@ public class ApprovedListView extends AppCompatActivity implements PopupMenu.OnM
         outState.putString("authString",authString);
         outState.putString("username",usernameLabel);
         Log.v("OnsaveInstanceState",usernameLabel);
+        getSupportFragmentManager().putFragment(outState,"idFragmentState",idfragment);
+        getSupportFragmentManager().putFragment(outState,"logFragmentState",loggfragment);
         super.onSaveInstanceState(outState);
     }
     @Override
@@ -114,10 +114,14 @@ public class ApprovedListView extends AppCompatActivity implements PopupMenu.OnM
         super.onRestoreInstanceState(inState);
         authString=inState.getString("authString");
         usernameLabel=inState.getString("username");
+        idfragment=(idFragment) getSupportFragmentManager().getFragment(inState,"idFragmentState");
+        loggfragment=(loggFragment) getSupportFragmentManager().getFragment(inState,"logFragmentState");
         Log.v("onRestoreInstance",usernameLabel);
-        //getIdList();
-        //Log.v("IdList","Hämtade idlistan nuuuuuuu!!!!!");
-        //getLoggList();
+        loginLabel.setText(usernameLabel);
+        getLoggList();
+        getIdList();
+
+
     }
 
     @Override
@@ -171,12 +175,6 @@ public class ApprovedListView extends AppCompatActivity implements PopupMenu.OnM
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.v("OnSTOP", "Application has stopped");
-
-    }
 
     private void setUpViewPager() {
         FragmentManager manager = getSupportFragmentManager();
@@ -208,7 +206,7 @@ public class ApprovedListView extends AppCompatActivity implements PopupMenu.OnM
 
     public void navigationview(){
 
-        loginLabel.setText(usernameLabel);
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
 
             @Override
@@ -414,11 +412,6 @@ public class ApprovedListView extends AppCompatActivity implements PopupMenu.OnM
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.v("Destroyer!!!", "Application is destroying run for your life!!!");
-    }
 
     public void unlock(){
         AsyncTaskUnlock unlock = new AsyncTaskUnlock(authString);
