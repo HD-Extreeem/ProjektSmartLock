@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">LockDroid</string>
+
+
+    <string name="person_age">age</string>
+    <string name="person_name">name</string>
+    <string name="person_cv">cv</string>
+    <string name="toolbar">toolbar</string>
+    <string name="chkSelected">chkSelected</string>
+    <string name="linearLayout">LinearLayout</string>
+    <string name="recyclerView1">recyclerViewList</string>
+    <string name="savetoserver">Save To Server</string>
+    <string name="clearlist">Clearlist</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="Id">Id</string>
+    <string name="Unlock">Unlock</string>
+    <string name="search">search</string>
+
+    <string name="default_gcm_senderId">52976770274</string>
+
+</resources>

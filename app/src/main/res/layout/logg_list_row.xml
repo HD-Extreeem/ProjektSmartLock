@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/name"
+            android:textColor="@color/Orange"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:layout_alignParentTop="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <LinearLayout
+            android:layout_below="@id/name"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dateLayoutRow"
+            android:paddingLeft="2dp">
+
+                <ImageView
+                    android:layout_width="17dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/dateImage"
+                    android:layout_marginRight="0dp"
+                    android:src="@drawable/date" />
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_below="@id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="3dp"
+                    android:textStyle="bold" />
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/status"
+            android:textColor="@color/Black"
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_below="@id/dateLayoutRow"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/timeLayoutRow"
+            android:paddingLeft="2dp"
+            android:paddingTop="5dp">
+
+                <ImageView
+                    android:layout_width="17dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/timeImage"
+                    android:src="@drawable/time"
+                    android:paddingLeft="0dp" />
+
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingTop="0dp"
+                    android:layout_marginLeft="3dp"
+                    android:textStyle="bold" />
+
+        </LinearLayout>
+
+</RelativeLayout>

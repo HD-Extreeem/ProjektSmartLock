@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/unlock"
+            android:checked="false"
+            android:icon="@drawable/unlockicon"
+            android:visible="true"
+            android:title="@string/Unlock" />
+
+        <item
+            android:id="@+id/clearlist"
+            android:checked="false"
+            android:icon="@drawable/empty"
+            android:title="@string/clearlist" />
+        <item
+            android:id="@+id/searchLog"
+            android:checked="false"
+            android:icon="@drawable/search"
+            android:title="@string/search" />
+    </group>
+</menu>

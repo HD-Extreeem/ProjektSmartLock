@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/card_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:elevation="4dp"
+            android:textSize="@dimen/abc_text_size_headline_material"
+            android:textColor="@color/Orange"
+            android:textStyle="bold"
+             />
+
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/chkSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            android:theme="@style/switchStyle"
+            android:layout_alignEnd="@id/card_id"
+            android:layout_centerVertical="true"
+            />
+
+</RelativeLayout>
