@@ -9,29 +9,16 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
 import java.net.URL;
-
 import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView loginview;
     private EditText loginedit;
     private Button btnlogin;
-    private TextView errorText;
-    //  private TextView passwordview;
     private EditText passwordedit;
     private String pass;
     private String name;
-    private int selected = 0;
     private String passname = "";
-
-    private boolean clicked = false;
-    private int attemptCounter = 3;
-    private static String result;
     private ApprovedListView approvedListView = new ApprovedListView();
 
     private String authString="";
@@ -49,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         addListenerOnButton();
-        loginedit.setText("username");
-        passwordedit.setText("password");
+        loginedit.setText("some user");
+        passwordedit.setText("some pass");
         //username.setErrorEnabled(false);
         //password.setErrorEnabled(false);
 
@@ -140,18 +127,11 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Integer result) {
             if(result == 200) {
                 Approved();
-                // InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                //OutputStreamWriter out2 = new OutputStreamWriter(urlConnection.getOutputStream());
-                //out2.write("open");
-                //out2.flush();
-                //out2.close();
-                //in.close();
             }
             else if(result>=500){
                 errorServer();
             }
             else{
-
                 error();
             }
         }
