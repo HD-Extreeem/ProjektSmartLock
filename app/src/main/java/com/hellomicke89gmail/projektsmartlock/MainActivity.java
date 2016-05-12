@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         addListenerOnButton();
-        loginedit.setText("");
-        passwordedit.setText("");
+        loginedit.setText("username");
+        passwordedit.setText("password");
         //username.setErrorEnabled(false);
         //password.setErrorEnabled(false);
 
