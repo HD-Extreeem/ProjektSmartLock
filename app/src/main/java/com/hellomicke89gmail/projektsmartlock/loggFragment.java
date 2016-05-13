@@ -21,16 +21,16 @@ public class loggFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private LogRecyclerAdapter loggAdapter;
     private static ArrayList<LogInfo> logList;
     protected SwipeRefreshLayout swipeRefreshLayout;
-    private static ApprovedListView listView;
+    private static MainActivity listView;
     protected RecyclerView.Adapter myAdapter;
     private View rootView;
 
     //private tabAdapter adapter;
 
 
-    public static loggFragment newInstance(ArrayList<LogInfo> logglist, ApprovedListView approvedListView) {
+    public static loggFragment newInstance(ArrayList<LogInfo> logglist, MainActivity mainActivity) {
         logList=logglist;
-        listView = approvedListView;
+        listView = mainActivity;
         return new loggFragment();
     }
 
@@ -59,14 +59,13 @@ public class loggFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         myAdapter.notifyDataSetChanged();
 
 
-
-
         return rootView;
     }
 
     public void updateAdapter(ArrayList<LogInfo> loggList) {
         this.logList.clear();
         this.logList=loggList;
+
 
         if(loggRecyclerView.getAdapter()!=null){
             loggRecyclerView.swapAdapter(new LogRecyclerAdapter(this.logList), false);

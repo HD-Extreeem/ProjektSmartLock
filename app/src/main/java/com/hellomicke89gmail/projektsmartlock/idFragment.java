@@ -2,7 +2,6 @@ package com.hellomicke89gmail.projektsmartlock;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,14 +21,14 @@ public class idFragment extends Fragment implements SwipeRefreshLayout.OnRefresh
     private static HashMap<String, Boolean> idMap;
     private static HashMap<String,String> idNameMaps;
     private static ArrayList<Person> keys;
-    private static ApprovedListView listView;
+    private static MainActivity listView;
     protected RecyclerView recyclerView;
     private View rootView;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView.Adapter myAdapter;
 
 
-    public static idFragment newInstance(ArrayList<Person> key,HashMap<String, Boolean> idMaps, HashMap<String,String> idNameMap,ApprovedListView listViews) {
+    public static idFragment newInstance(ArrayList<Person> key,HashMap<String, Boolean> idMaps, HashMap<String,String> idNameMap,MainActivity listViews) {
         keys=key;
         idMap=idMaps;
         idNameMaps=idNameMap;
@@ -67,11 +66,6 @@ public class idFragment extends Fragment implements SwipeRefreshLayout.OnRefresh
 
 
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
     public void updateAdapter(HashMap<String, Boolean> idMap, HashMap<String, String> idNameMap) {
         keys.clear();
         String key;
@@ -98,12 +92,7 @@ public class idFragment extends Fragment implements SwipeRefreshLayout.OnRefresh
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState){
-        super.onSaveInstanceState(outState);
 
-
-    }
     @Override
     public void onRefresh() {
             swipeRefreshLayout.setRefreshing(true);

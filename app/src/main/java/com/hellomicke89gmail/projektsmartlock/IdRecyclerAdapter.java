@@ -5,8 +5,6 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -17,11 +15,11 @@ public class IdRecyclerAdapter extends RecyclerView.Adapter<IdRecyclerAdapter.Pe
     HashMap<String,Boolean> idMap;
     HashMap<String, String> idNameMap;
     ArrayList<Person> keys;
-    ApprovedListView listview;
+    MainActivity listview;
 
 
 
-    IdRecyclerAdapter(ArrayList<Person> keys, HashMap<String, Boolean> idMap, HashMap<String, String> idNameMap, ApprovedListView listview){
+    IdRecyclerAdapter(ArrayList<Person> keys, HashMap<String, Boolean> idMap, HashMap<String, String> idNameMap, MainActivity listview){
         this.idMap=idMap;
         this.keys = keys;
         this.idNameMap=idNameMap;

@@ -1,160 +1,433 @@
 package com.hellomicke89gmail.projektsmartlock;
 
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
+import android.content.*;
 import android.os.Bundle;
-import android.util.Base64;
-import android.view.View;
-import android.widget.Button;
+import android.os.Handler;
+import android.support.design.widget.*;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.*;
+import android.support.v7.widget.*;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.*;
 import android.widget.EditText;
-import java.net.URL;
-import javax.net.ssl.HttpsURLConnection;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
-    private EditText loginedit;
-    private Button btnlogin;
-    private EditText passwordedit;
-    private String pass;
-    private String name;
-    private String passname = "";
-    private ApprovedListView approvedListView = new ApprovedListView();
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
-    private String authString="";
+import java.util.*;
 
-    private static TextInputLayout password;
-    private static TextInputLayout username;
+
+
+
+public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
+
+    private Toolbar myToolbar;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+    HashMap<String, Boolean> persons=new HashMap<>();
+    ArrayList<Person> keys=new ArrayList<>();
+    private String key;
+    HashMap<String, String> idNameMap=new HashMap<>();
+    idFragment idfragment;
+    loggFragment loggfragment=new loggFragment();
+    ArrayList<LogInfo> loggList=new ArrayList<>();
+    private static String authString;
+
+    private BroadcastReceiver broadcastReceiver;
+
+    private String titles[] = {"Unlock","Clear List","Search"};
+
+    TextView loginLabel;
+    private static String usernameLabel;
+    int[] icons={R.drawable.unlockicon,R.drawable.empty,R.drawable.search};
+    int profileImage = R.drawable.person_icon;
+    private DrawerLayout myDrawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
+    private NavigationView navigationView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.newactivity);
-        username = (TextInputLayout) findViewById(R.id.user);
-        password = (TextInputLayout) findViewById(R.id.passsword);
+        setContentView(R.layout.mainactivity);
+        registercomponents();
+        setupDrawer();
+        setUpViewPager();
+        navigationview();
+
+        getLoggList();
+        getIdList();
 
 
-        addListenerOnButton();
-        loginedit.setText("some user");
-        passwordedit.setText("some pass");
-        //username.setErrorEnabled(false);
-        //password.setErrorEnabled(false);
-
-    }
-
-
-
-
-    public void addListenerOnButton() {
-        View.OnClickListener choiceListener = new ChoiceButtonListener();
-        btnlogin = (Button) findViewById(R.id.btnlogin);
-
-        btnlogin.setOnClickListener(choiceListener);
-        loginedit = (EditText) findViewById(R.id.editText);
-
-
-        passwordedit = (EditText) findViewById(R.id.editText2);
-
-
-
-
-    }
-
-    private class ChoiceButtonListener implements View.OnClickListener {
-
-        public void onClick(View v) {
-            if (v.getId() == R.id.btnlogin) {
-                btnlogin.setEnabled(false);
-                start();
+            int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+            if (ConnectionResult.SUCCESS != resultCode) {
+                if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                    errorToast("Googleplay Service is not installed");
+                    GooglePlayServicesUtil.showErrorNotification(resultCode, getApplicationContext());
+                } else {
+                    errorToast("Device does not support GooglePlay Services");
+                }
+            } else {
+                Intent intent = new Intent(this, GCMRegistrationIntentService.class);
+                startService(intent);
             }
-        }
-    }
 
-    private void start() {
-
-        name = loginedit.getText().toString();
-        pass = passwordedit.getText().toString();
-
-        passname = name + ":" + pass;
-        MyTask2 task = new MyTask2();
-
-        task.execute();
 
     }
 
-
-    class MyTask2 extends AsyncTask<String, Void, Integer> {
-
-        protected Integer doInBackground(String... params) {
-            HttpsURLConnection urlConnection;
-            int statusCode=0;
-            String statusmessage="";
-
-            try {
-
-                byte[] authEncBytes = Base64.encode(passname.getBytes(), Base64.DEFAULT);
-
-                authString = new String(authEncBytes);
-
-                System.out.println("Base64 encoded auth string: " + authString);
-
-                URL url = new URL("https://" + passname + "@lockdroid.se/login");
-
-                urlConnection = (HttpsURLConnection) url.openConnection();
-
-                urlConnection.setRequestProperty("Authorization", "Basic " + authString);
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString("authString",authString);
+        outState.putString("username",usernameLabel);
+        Log.v("OnsaveInstanceState",usernameLabel);
+        getSupportFragmentManager().putFragment(outState,"idFragmentState",idfragment);
+        getSupportFragmentManager().putFragment(outState,"logFragmentState",loggfragment);
+        super.onSaveInstanceState(outState);
+    }
+    @Override
+    protected void onRestoreInstanceState(Bundle inState) {
+        super.onRestoreInstanceState(inState);
+        authString=inState.getString("authString");
+        usernameLabel=inState.getString("username");
+        idfragment=(idFragment) getSupportFragmentManager().getFragment(inState,"idFragmentState");
+        loggfragment=(loggFragment) getSupportFragmentManager().getFragment(inState,"logFragmentState");
+        Log.v("onRestoreInstance",usernameLabel);
+        loginLabel.setText(usernameLabel);
+        getLoggList();
+        getIdList();
 
 
-                statusCode = urlConnection.getResponseCode();
-                statusmessage = urlConnection.getResponseMessage();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter();
+      //  intentFilter.addAction("token");
+        intentFilter.addAction("unlock");
+        intentFilter.addAction("Change to card id data on server");
+        intentFilter.addAction("log");
+
+        broadcastReceiver = new MyBroadCastReciever();
+        registerReceiver(broadcastReceiver, intentFilter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,new IntentFilter(GCMRegistrationIntentService.registration_sucsses));
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,new IntentFilter(GCMRegistrationIntentService.registration_failed));
+
+    }
 
 
-                System.out.println(passname);
-                System.out.println(url);
-                System.out.println(statusCode);
-                System.out.println(statusmessage);
-
-
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-            return statusCode;
-        }
+    private class MyBroadCastReciever extends BroadcastReceiver{
 
         @Override
-        protected void onPostExecute(Integer result) {
-            if(result == 200) {
-                Approved();
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("unlock")){
+                unlock();
+                //unregisterReceiver(broadcastReceiver);
             }
-            else if(result>=500){
-                errorServer();
+
+            if(intent.getAction().equals(GCMRegistrationIntentService.registration_sucsses)){
+                String token=intent.getStringExtra("token");
+                errorToast("GCM token: "+ token);
+                new AsycTaskPostToken(token,authString).execute();
+
+            }else if(intent.getAction().equals(GCMRegistrationIntentService.registration_failed)){
+                errorToast("GCM REGISTRATION FAILED");
+
             }
-            else{
-                error();
+
+            else if(intent.getAction().equals("Change to card id data on server")){
+                Log.v("APPROVEDLISTVIEW", "Change to card id data on server!");
+                getIdList();
+               // unregisterReceiver(broadcastReceiver);
+            }
+            else if(intent.getAction().equals("log")){
+                Log.v("APPROVEDLISTVIEW", "Log data changed!");
+                getLoggList();
             }
         }
     }
 
-    private void Approved(){
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.v("ONPAUSE", "Application has PAUSED");
+        unregisterReceiver(broadcastReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+    }
 
 
-        approvedListView.setCredentials(authString,name);
+    private void setUpViewPager() {
+        FragmentManager manager = getSupportFragmentManager();
+        ViewPagerAdapter adapter = new ViewPagerAdapter(manager);
+        adapter.addFragment(idfragment = idFragment.newInstance(keys,persons,idNameMap,this), "Id-Lista");
+        adapter.addFragment(loggfragment=loggfragment.newInstance(loggList,this),"Logg-Lista");
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setupWithViewPager(viewPager);
+        setSupportActionBar(myToolbar);
+    }
 
-        Intent i = new Intent(MainActivity.this, ApprovedListView.class);
-        startActivity(i);
-        btnlogin.setEnabled(true);
+    private void registercomponents() {
+
+        navigationView=(NavigationView)findViewById(R.id.navigation_view);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        myDrawerLayout=(DrawerLayout)findViewById(R.id.parent_drawer_layout);
+        View v=navigationView.getHeaderView(0);
+        loginLabel=(TextView)v.findViewById(R.id.UsernameLabel);
+
 
     }
-    private void error(){
+    public void searchLog() {
 
-        username.setError("Username Is Wrong, Try Again!");
-        password.setError("Password Is Wrong, Try Again!");
+        showInputSearchDialog();
     }
-    private void errorServer(){
-        username.setError("Server is currently down, Try again later!");
-        password.setError("Server is currently down, Try again later!");
+
+    public void navigationview(){
+
+        loginLabel.setText(usernameLabel);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
+
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                item.setChecked(false);
+
+                myDrawerLayout.closeDrawers();
+
+                switch (item.getItemId()){
+                    case R.id.unlock:
+                        unlock();
+
+                        item.setChecked(false);
+                        return true;
+
+                    case R.id.clearlist: emptylist();
+                        item.setChecked(false);
+
+                        return true;
+
+                    case R.id.searchLog:
+                        searchLog();
+                        item.setCheckable(false);
+
+                        return true;
+
+                }
+                return false;
+            }
+        });navigationView.setItemIconTintList(null);
     }
+    public void setupDrawer(){
+
+        drawerToggle=new ActionBarDrawerToggle(this, myDrawerLayout,myToolbar,R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);        }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        myDrawerLayout.addDrawerListener(drawerToggle);
+
+
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle your other action bar items...
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    public void showInputDialog(final String key) {
+        this.key=key;
+
+        LayoutInflater inflater=LayoutInflater.from(MainActivity.this);
+        View promptView=inflater.inflate(R.layout.input_dialog, null);
+        AlertDialog.Builder alertDialogBuilder= new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setView(promptView);
+        final EditText editext=(EditText)promptView.findViewById(R.id.name_edit_text);
+
+        alertDialogBuilder.setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener(){
+
+            public void onClick(DialogInterface dialog, int id){
+                persons=idFragment.getIdMap();
+                idNameMap=idFragment.getIdNameMap();
+                String cardName=editext.getText().toString();
+                if(cardName.equals("")){
+                    idNameMap.remove(key);
+                }else{
+                    idNameMap.put(key, cardName);
+                }
+
+                updateIdAdapter(persons,idNameMap);
+                saveToServer();
+
+            }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
+
+            public void onClick(DialogInterface dialog, int id){
+                dialog.cancel();
+            }
+        }).setTitle("CardId: "+key);
+        AlertDialog alert=alertDialogBuilder.create();
+        alert.show();
+
+    }
+
+    public void showInputSearchDialog() {
+
+        LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+        View promptView = inflater.inflate(R.layout.search_input_dialog, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setView(promptView);
+        final EditText editSearchInput = (EditText) promptView.findViewById(R.id.editSearch);
+
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                Log.v("OnClick 'ok' :", "");
+                String logType = editSearchInput.getText().toString();
+                Log.v("OnClick type: ", "" + logType);
+                new AsyncTaskLogGET( MainActivity.this,authString,logType).execute();
+                new Handler().postDelayed(
+                        new Runnable(){
+                            @Override
+                            public void run() {
+                                tabLayout.getTabAt(1).select();
+                            }
+                        }, 100);
+            }
+        }).setTitle("Enter Username:");
+
+        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                Log.v("Cancel", "");
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+    }
+
+    public void updateList(HashMap<String, Boolean> idMap){
+
+        persons=idMap;
+
+        for(Map.Entry<String, Boolean> p: persons.entrySet()){
+            System.out.println(p.getKey().toString()+" , "+p.getValue().toString());
+        }
+
+    }
+
+    public void emptylist (){
+        persons.clear();
+        idNameMap.clear();
+        updateIdAdapter(persons, idNameMap);
+        saveToServer();
+        errorToast("List Cleared!");
+
+    }
+
+
+    public void errorToast(String txt){
+        Snackbar snackbar = Snackbar
+                .make(this.navigationView, txt,   Snackbar.LENGTH_LONG);
+
+        snackbar.show();
+    }
+
+
+    public void updateIdAdapter(HashMap<String,Boolean> idMap,  HashMap<String, String> idNameMap){
+        idfragment.updateAdapter(idMap,idNameMap);
+    }
+
+    public void updateLogAdapter(ArrayList<LogInfo> logList){
+
+        loggfragment.updateAdapter(logList);
+    }
+
+
+    public void showPopUp(View v, String key) {
+
+        this.key=key;
+        PopupMenu popupMenu=new PopupMenu(this, v);
+        MenuInflater inflator=popupMenu.getMenuInflater();
+        popupMenu.setOnMenuItemClickListener(MainActivity.this);
+
+        inflator.inflate(R.menu.long_click_popup, popupMenu.getMenu());
+
+        popupMenu.show();
+
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()){
+            case(R.id.edit_cardname):
+                showInputDialog(key);
+                return true;
+
+            case(R.id.remove_card):
+                persons = idFragment.getIdMap();
+                idNameMap = idFragment.getIdNameMap();
+                persons.remove(key);
+                idNameMap.remove(key);
+                updateIdAdapter(persons,idNameMap);
+                saveToServer();
+                return true;
+            default: return false;
+        }
+    }
+
+    public void setCredentials(String authString,String usernameLabel) {
+        this.authString=authString;
+        this.usernameLabel=usernameLabel;
+
+
+
+    }
+
+
+    public void unlock(){
+        AsyncTaskUnlock unlock = new AsyncTaskUnlock(authString);
+        unlock.execute();
+        errorToast("Door Have Been Unlocked!");
+    }
+
+    public void saveToServer(){
+        persons = idFragment.getIdMap();
+        idNameMap = idFragment.getIdNameMap();
+        AsyncTaskPOST post = new AsyncTaskPOST(persons, idNameMap,authString);
+        post.execute();
+        errorToast("List Sent to Server!");
+    }
+
+    public void getIdList(){
+        new AsyncTaskGET(this, authString).execute();
+    }
+
+    public void getLoggList(){
+       new AsyncTaskLogGET(this,authString,"").execute();
+    }
+
+
+
 }
-

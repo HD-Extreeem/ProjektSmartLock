@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -26,14 +25,14 @@ public class GCMListener extends GcmListenerService {
 
     private void sendNotification(String message){
         Log.v("GCMListener",message);
-        if(message.equals("unlock")||message.equals("Change to card id data on server")||message.equals("token")) {
+        if(message.equals("unlock")||message.equals("Change to card id data on server")||message.equals("token")||message.equals("log")) {
             Intent intent = new Intent();
             intent.setAction(message);
             sendBroadcast(intent);
         }
         else {
 
-            Intent intent = new Intent(this, ApprovedListView.class);
+            Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
             int requestCode = 0;
             PendingIntent pendingIntent = PendingIntent.getActivity(this, requestCode, intent, PendingIntent.FLAG_ONE_SHOT);

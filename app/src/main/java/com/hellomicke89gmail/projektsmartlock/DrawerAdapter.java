@@ -1,15 +1,12 @@
 package com.hellomicke89gmail.projektsmartlock;
 
 import android.content.Context;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder>{
@@ -17,21 +14,21 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
             private static final int TYPE_HEADER = 0;
             private static final int TYPE_ITEM = 1;
 
-            private String mNavTitles[]; // String Array to store the passed titles Value from MainActivity.java
+            private String mNavTitles[];
             private int mIcons[];
             private String loginLabel;
             private int profileImage;
             private String usernameLabel;
-            private ApprovedListView approvedListView;
+            private MainActivity mainActivity;
             private Context context;
 
-             DrawerAdapter(String Titles[], int Icons[], String loginLabel, String usernameLabel, int profileImage, ApprovedListView approvedListView, Context context){ // DrawerAdapter Constructor with titles and icons parameter
+             DrawerAdapter(String Titles[], int Icons[], String loginLabel, String usernameLabel, int profileImage, MainActivity mainActivity, Context context){ // DrawerAdapter Constructor with titles and icons parameter
 
                 this.mNavTitles = Titles; //have seen earlier
                 this.mIcons = Icons;
                 this.loginLabel = loginLabel;
                 this.usernameLabel = usernameLabel;
-                this.approvedListView=approvedListView;
+                this.mainActivity = mainActivity;
                 this.profileImage = profileImage;
                 this.context=context;
 
@@ -40,14 +37,14 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
         public DrawerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if (viewType == TYPE_ITEM) {
                 View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.drawer_row_layout,parent,false); //Inflating the layout
-                ViewHolder holderItem = new ViewHolder(v,viewType, context, approvedListView); //Creating ViewHolder and passing the object of type view
+                ViewHolder holderItem = new ViewHolder(v,viewType, context, mainActivity); //Creating ViewHolder and passing the object of type view
                 return holderItem; // Returning the created object
                 //inflate your layout and pass it to view holder
             } else if (viewType == TYPE_HEADER) {
 
                 View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.header,parent,false); //Inflating the layout
 
-                ViewHolder holderHeader = new ViewHolder(v,viewType, context, approvedListView); //Creating ViewHolder and passing the object of type view
+                ViewHolder holderHeader = new ViewHolder(v,viewType, context, mainActivity); //Creating ViewHolder and passing the object of type view
 
                 return holderHeader; //returning the object created
             }
@@ -63,10 +60,10 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
                     @Override
                     public void onClick(View v) {
                         switch (position){
-                            case 1: approvedListView.unlock();
+                            case 1: mainActivity.unlock();
                                 System.out.print("UNLOCK");
                                 break;
-                            case 2: approvedListView.emptylist();
+                            case 2: mainActivity.emptylist();
                                 System.out.print("EMPTYLIST");
                                 break;
 
@@ -112,15 +109,15 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
         TextView loginLabel;
         TextView userNameLabel;
         Context context;
-        ApprovedListView approvedListView;
+        MainActivity mainActivity;
 
-        public ViewHolder(View itemView,int ViewType, Context context, ApprovedListView approvedListView) { // Creating ViewHolder Constructor with View and viewType As a parameter
+        public ViewHolder(View itemView,int ViewType, Context context, MainActivity mainActivity) { // Creating ViewHolder Constructor with View and viewType As a parameter
 
             super(itemView);
             itemView.setClickable(true);
 
             this.context=context;
-            this.approvedListView=approvedListView;
+            this.mainActivity = mainActivity;
 
 
             //Type_Item is used to differentiate headerview from the recyclerview(where to put which components

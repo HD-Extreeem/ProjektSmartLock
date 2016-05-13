@@ -1,27 +1,12 @@
 package com.hellomicke89gmail.projektsmartlock;
 
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -29,12 +14,12 @@ public class AsyncTaskLogGET extends AsyncTask<String,Void,Integer>{
   private ArrayList<LogInfo> logList =new ArrayList<>();
   private String username;
   private String password;
-  private ApprovedListView approvedListView;
+  private MainActivity mainActivity;
   private String authString;
   private String logType;
   
-        AsyncTaskLogGET(ApprovedListView approvedListView,String authString,String logType){
-            this.approvedListView = approvedListView; // använd samma objekt istället för att skapa ett nytt.
+        AsyncTaskLogGET(MainActivity mainActivity, String authString, String logType){
+            this.mainActivity = mainActivity; // använd samma objekt istället för att skapa ett nytt.
             this.authString=authString;
             this.logType=logType;
         }
@@ -75,6 +60,7 @@ public class AsyncTaskLogGET extends AsyncTask<String,Void,Integer>{
                       parts = text.split(" ");
                       for(int i = 0; i < 4; i++) {
                         if(i==0) {
+
                           currentPerson.setName(parts[i]); //hämta namn
                         } else if (i==1) {
                           currentPerson.setDate(parts[i]); // hämta datum
@@ -112,12 +98,12 @@ public class AsyncTaskLogGET extends AsyncTask<String,Void,Integer>{
     @Override
     protected void onPostExecute (Integer result){
         if (result==1){
-            approvedListView.updateLogAdapter(logList);
-            approvedListView.errorToast("Log updated");
+            mainActivity.updateLogAdapter(logList);
+            mainActivity.errorToast("Log updated");
         }
         else {
             System.out.println("Failed to update log");
-            approvedListView.errorToast("Failed to update log");
+            mainActivity.errorToast("Failed to update log");
         }
     }
 

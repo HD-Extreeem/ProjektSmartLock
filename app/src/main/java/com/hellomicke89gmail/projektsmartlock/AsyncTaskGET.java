@@ -1,16 +1,8 @@
 package com.hellomicke89gmail.projektsmartlock;
 
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-import org.json.JSONArray;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.BufferedReader;
@@ -20,14 +12,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class AsyncTaskGET extends AsyncTask<String,Void,Integer>{
         private static final String TAG = "RecyclerViewExample";
-        ApprovedListView approvedListView;
+        MainActivity mainActivity;
         ArrayList<Person> keys = new ArrayList<>();
         HashMap<String, String> idNameMap=new HashMap<>();
         HashMap<String ,Boolean> idMap= new HashMap<>();
@@ -35,16 +25,12 @@ public class AsyncTaskGET extends AsyncTask<String,Void,Integer>{
 
         idFragment fragment;
 
-//        idFragment fragment= new idFragment();
 
-        AsyncTaskGET(ApprovedListView approvedListView, String authString){
-            this.approvedListView = approvedListView;
+
+        AsyncTaskGET(MainActivity mainActivity, String authString){
+            this.mainActivity = mainActivity;
             this.authString=authString;
-            //this.idNameMap=idNameMaps;
-            //fragment=new idFragment(keys,idMap,idNameMap,approvedListView);
-        }@Override
-        protected void onPreExecute() {
-            //approvedListView.setProgressBarIndeterminateVisibility(true);
+
         }
         @Override
         protected  Integer doInBackground(String... params){
@@ -84,14 +70,14 @@ public class AsyncTaskGET extends AsyncTask<String,Void,Integer>{
         }
     @Override
     protected void onPostExecute (Integer result){
-        //approvedListView.progressBar.setVisibility(View.GONE);
+
         if (result==1){
 
-            approvedListView.updateIdAdapter(idMap, idNameMap);
+            mainActivity.updateIdAdapter(idMap, idNameMap);
 
         }
         else {
-            approvedListView.errorToast("Failed to get id" );
+            mainActivity.errorToast("Failed to get id" );
 
         }
     }
