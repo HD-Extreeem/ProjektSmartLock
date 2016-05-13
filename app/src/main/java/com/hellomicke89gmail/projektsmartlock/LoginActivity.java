@@ -37,8 +37,8 @@ public class LoginActivity extends AppCompatActivity {
         registercomponents();
         addListenerOnButton();
 
-        loginedit.setText("username");
-        passwordedit.setText("password");
+        loginedit.setText("");
+        passwordedit.setText("");
         //username.setErrorEnabled(false);
         //password.setErrorEnabled(false);
 
@@ -133,13 +133,7 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Integer result) {
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
 
-                }
-            }, 2000);
 
             if(result == 200) {
                 Approved();
@@ -169,10 +163,12 @@ public class LoginActivity extends AppCompatActivity {
 
         username.setError("Username Is Wrong, Try Again!");
         password.setError("Password Is Wrong, Try Again!");
+        progressBar.setVisibility(View.GONE);
     }
     private void errorServer(){
         username.setError("Server is currently down, Try again later!");
         password.setError("Server is currently down, Try again later!");
+        progressBar.setVisibility(View.GONE);
     }
 }
 

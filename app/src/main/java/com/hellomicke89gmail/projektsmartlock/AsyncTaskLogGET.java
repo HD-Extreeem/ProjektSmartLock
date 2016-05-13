@@ -51,7 +51,7 @@ public class AsyncTaskLogGET extends AsyncTask<String,Void,Integer>{
                     BufferedReader read = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
 
                     text = read.readLine();
-                    for(int i =0; i<2;i++){
+                    for(int i =0; i<1;i++){
                         text = read.readLine();
                     }
 

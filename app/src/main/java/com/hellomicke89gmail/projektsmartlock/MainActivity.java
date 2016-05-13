@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private static String authString;
 
     private BroadcastReceiver broadcastReceiver;
-
+    private String logType;
     private String titles[] = {"Unlock","Clear List","Search"};
 
     TextView loginLabel;
@@ -303,16 +303,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
             public void onClick(DialogInterface dialog, int which) {
                 Log.v("OnClick 'ok' :", "");
-                String logType = editSearchInput.getText().toString();
+                logType="";
+                logType = editSearchInput.getText().toString();
                 Log.v("OnClick type: ", "" + logType);
                 new AsyncTaskLogGET( MainActivity.this,authString,logType).execute();
-                new Handler().postDelayed(
-                        new Runnable(){
-                            @Override
-                            public void run() {
-                                tabLayout.getTabAt(1).select();
-                            }
-                        }, 100);
+
             }
         }).setTitle("Enter Username:");
 
